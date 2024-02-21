@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="/home.js" defer></script>
+    <script type="module" src="/prevent_webview.js" defer></script>
+</head>
+<body>
+    <div class="navhome">
+       <ul>
+        <li><a href="" id="OpenFile">Open File</a></li>
+        <li><a href="">Help</a></li>
+        <li><a href="">About us</a></li>
+       </ul> 
+    </div>
+    <div class="inputdetails">
+        <p id="warning"><i>please select some DICOM file</i></p>
+        <div class="inputdetail">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="inputname" spellcheck="false">
+        </div>
+        <div class="inputdetail">
+            <label for="room">Room</label>
+            <input type="text" name="room" id="inputroom" spellcheck="false">
+        </div>
+        <button id="processBtn">process</button>
+    </div>    
+</body>
+</html>

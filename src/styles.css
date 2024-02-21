@@ -1,0 +1,399 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  min-width: 0;
+  font-family: sans-serif;
+  overflow: hidden;
+  user-select: none 
+}
+
+
+:root {
+  --cb : #014aac;
+  --cy: #ffde59;
+  --cyh: rgb(255, 216, 62);
+  --cr: #e82626;
+  --fsmh: 16px;
+  --fssmh: 14px
+  --fsm: 14px;
+  --fssm: 12px
+}
+
+p, h3 {
+  font-size: 14px;
+}
+
+.navhome {
+  background: var(--cb);
+}
+
+.navhome ul {
+  display: flex;
+  gap: 20px;
+  padding: 10px;
+}
+
+.navhome li {
+  list-style: none;
+}
+
+.navhome a {
+  color: white;
+  text-decoration: none;
+  font-size: var(--fssmh);
+}
+
+#warning {
+  color: var(--cr);
+  font-size: var(--fssm);
+}
+
+.inputdetails {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 40px;
+}
+
+.inputdetail {
+  font-size: var(--fsmh);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.inputdetail input {
+  width: 40ch;
+  padding: 5px;
+  font-size: var(--fsmh);
+  border: 1px solid black;
+  outline: none;
+}
+
+#processBtn {
+  padding: 5px 25px;
+  font-size: var(--fsmh);
+  cursor: pointer;
+  border: none;
+  margin-top: 5px;
+  background: var(--cy);
+}
+
+#processBtn:hover {
+  background: var(--cyh);
+}
+
+/* index.html */
+#newFile {
+  border: none;
+  outline: none;
+  font-size: var(--fsm);
+  padding: 5px 20px;
+  margin: 20px 0 10px 15px;
+  cursor: pointer;
+  background: black;
+  color: white;
+}
+
+.tabsBar {
+  display: flex;
+  padding: 2px 5px;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.tabsBar button {
+  border: none;
+  outline: none;
+  font-size: var(--fsm);
+  padding: 5px 15px;
+  cursor: pointer;
+}
+
+.tabsBar button:hover:not(.activeBtn) {
+  background: #e2e5e8;
+}
+
+.activeBtn {
+  display: block;
+  background: var(--cb);
+  color: white;
+}
+
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+.container {
+  display: flex;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.left {
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mid {
+  display: flex;
+  flex: 3;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.right {
+  display: flex;
+  flex: 3;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.top-right, .info-compare {
+  padding: 10px 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-right button, .info-compare button {
+  height: fit-content;
+  padding: 5px 15px;
+  border: none;
+  outline: none;
+  font-size: var(--fssm);
+  cursor: pointer;
+  background: var(--cy);
+}
+
+.top-right button:hover, .info-compare button:hover {
+  background: var(--cyh);
+}
+
+.container-compare {
+  width: 90vw;
+  padding-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.container-compare #mtf-plot1compare {
+  width: 720px;
+}
+
+.container-compare * {
+  overflow: visible !important;
+}
+
+.info-compare {
+  width: 45ch;
+  gap: 20px;
+  padding-right: 0;
+  padding-left: 10px;
+}
+
+.main-element {
+  display: none;
+}
+
+.load-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  height: 5px;
+  width: 5px;
+  color: var(--cr);
+  box-shadow: -10px -10px 0 5px,
+              -10px -10px 0 5px,
+              -10px -10px 0 5px,
+              -10px -10px 0 5px;
+  animation: loader-38 6s infinite;
+}
+
+@keyframes loader-38 {
+  0% {
+    box-shadow: -10px -10px 0 5px,
+                -10px -10px 0 5px,
+                -10px -10px 0 5px,
+                -10px -10px 0 5px;
+  }
+  8.33% {
+    box-shadow: -10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px -10px 0 5px;
+  }
+  16.66% {
+    box-shadow: -10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px 10px 0 5px,
+                10px 10px 0 5px;
+  }
+  24.99% {
+    box-shadow: -10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  33.32% {
+    box-shadow: -10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px 10px 0 5px,
+                -10px -10px 0 5px;
+  }
+  41.65% {
+    box-shadow: 10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px 10px 0 5px,
+                10px -10px 0 5px;
+  }
+  49.98% {
+    box-shadow: 10px 10px 0 5px,
+              10px 10px 0 5px,
+              10px 10px 0 5px,
+              10px 10px 0 5px;
+  }
+  58.31% {
+    box-shadow: -10px 10px 0 5px,
+                -10px 10px 0 5px,
+                10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  66.64% {
+    box-shadow: -10px -10px 0 5px,
+                -10px -10px 0 5px,
+                10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  74.97% {
+    box-shadow: -10px -10px 0 5px,
+                10px -10px 0 5px,
+                10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  83.3% {
+    box-shadow: -10px -10px 0 5px,
+                10px 10px 0 5px,
+                10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  91.63% {
+    box-shadow: -10px -10px 0 5px,
+                -10px 10px 0 5px,
+                -10px 10px 0 5px,
+                -10px 10px 0 5px;
+  }
+  100% {
+    box-shadow: -10px -10px 0 5px,
+                -10px -10px 0 5px,
+                -10px -10px 0 5px,
+                -10px -10px 0 5px;
+  }
+}
+
+/* Apply styles to the table */
+table {
+  font-size: var(--fssm);
+  width: 95%;
+  border-collapse: collapse;
+  margin-bottom: 5px;
+}
+
+/* Style the table headers */
+th {
+  background-color: #f2f2f2;
+  color: #333;
+  font-weight: bold;
+  padding: 3px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Style the table cells */
+td {
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Alternate row background color for better readability */
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Hover effect on rows */
+tr:hover {
+  background-color: #e0e0e0;
+}
+
+/* splashscreen */
+.splash {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.loader-splash {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin:15px auto;
+  position: relative;
+  color: #FFF;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader-splash::after,
+.loader-splash::before {
+  content: '';  
+  box-sizing: border-box;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  top: 50%;
+  left: 50%;
+  transform: scale(0.5) translate(0, 0);
+  background-color: #000000;
+  border-radius: 50%;
+  animation: animloader 1s infinite ease-in-out;
+}
+.loader-splash::before {
+  background-color: #FF3D00;
+  transform: scale(0.5) translate(-48px, -48px);
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} 
+@keyframes animloader {
+    50% {
+      transform: scale(1) translate(-50%, -50%);
+}
+}
+    
+  
+      
