@@ -1,10 +1,10 @@
 [package]
-name = "mtf-app"
-version = "0.0.0"
-description = "A Tauri App"
+name = "MTFKKU"
+version = "1.0.0"
+description = "MTFKKU"
 authors = ["you"]
 license = ""
-repository = ""
+repository = "https://github.com/MTFKKU/MTFKKU_App"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

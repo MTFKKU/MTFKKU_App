@@ -485,8 +485,9 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
     let hp = (0.11*(h as f32)) as i32;
     let wp = (0.10*(w as f32)) as i32;
     // crop 
+    let mut focus_crop = vec![(h/2)-hp, (h/2)+hp, (wp as f32 * 1.5) as i32, w-((wp as f32 * 1.2) as i32)];
     let mut real_focus = arr.slice(s![
-        (h/2)-hp..(h/2)+hp, (wp as f32 * 1.5) as i32..w-((wp as f32 * 1.2) as i32)
+        focus_crop[0]..focus_crop[1], focus_crop[2]..focus_crop[3]
     ]).to_owned();
     // change type to prevent add overflow
     let mut focus = real_focus.mapv(|x| x as u128);
@@ -500,8 +501,9 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
     let std = rotate_check.std(1.0) as f32;
     if std > (focus.max().unwrap() - focus.min().unwrap()) as f32 /30.0 {
         arr = rotate_array(PI, arr);
+        focus_crop = vec![(h/2)-hp, (h/2)+hp, (wp as f32 * 1.5) as i32, w-((wp as f32 * 1.2) as i32)];
         real_focus = arr.slice(s![
-            (h/2)-hp..(h/2)+hp, (wp as f32 * 1.5) as i32..w-((wp as f32 * 1.2) as i32)
+            focus_crop[0]..focus_crop[1], focus_crop[2]..focus_crop[3]
         ]).to_owned();
         focus = real_focus.mapv(|x| x as u128);
     } 
@@ -571,7 +573,7 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
         }
     } 
     //skip first one because we dont use it
-    linepairs = linepairs[1..].to_vec();
+    // linepairs = linepairs[1..].to_vec();
     // Ok((real_focus, linepairs, oneline_ori, arr))
     Ok((linepairs, oneline_ori, arr))
 }
@@ -591,27 +593,23 @@ fn find_mean(vector: &Vec<u128>) -> f32 {
 fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (HashMap<String, Vec<f32>>, Vec<u16>) {
     // calculate details value in MTF linepairs
 
-    // calculate maximum (1st linepair)
-    let mean_weights = 0.18;
-    let s1 = linepairs[0].0;
-    let s2 = linepairs[0].1;
-    let mut mean_val_col = oneline[s1..s2].to_vec();
-    mean_val_col.sort();
-    let mid_pos = cmp::max(cmp::min(
-        (s2-s1)/2, ((s2-s1) as f32 * mean_weights) as usize
-    ), 1); // prevent mid_pos is 0
-    let min_val0 = find_mean(&mean_val_col[0..mid_pos].to_vec()) as u16;
-    let max_val0 = find_mean(&mean_val_col[mean_val_col.len()-mid_pos..mean_val_col.len()].to_vec()) as u16;
+    // calculate maximum (1st linepair) [lp 1mm]
+    // let mean_weights = 0.18;
+    // let s1 = linepairs[0].0;
+    // let s2 = linepairs[0].1;
+    // let mut mean_val_col = oneline[s1..s2].to_vec();
+    // mean_val_col.sort();
+    // let mid_pos = cmp::max(cmp::min(
+    //     (s2-s1)/2, ((s2-s1) as f32 * mean_weights) as usize
+    // ), 1); // prevent mid_pos is 0
+    // let min_val0 = find_mean(&mean_val_col[0..mid_pos].to_vec()) as u16;
+    // let max_val0 = find_mean(&mean_val_col[mean_val_col.len()-mid_pos..mean_val_col.len()].to_vec()) as u16;
 
-    // let focus = focus.mapv(|x| x as i128);
-    // let min_val0 = *focus.slice(s![
-    //     .., linepairs[0].0..linepairs[0].1
-    // ]).mean_axis(Axis(0)).unwrap().min().unwrap() as f32;
-
-    // let max_val0 = *focus.slice(s![
-    //     .., linepairs[0].1..linepairs[1].0
-    // ]).mean_axis(Axis(0)).unwrap().max().unwrap() as f32;
-
+    // calculate maximum (1st linepairs) [lp 0mm]
+    let mean_val_col_min = oneline[linepairs[0].0..linepairs[0].1].to_vec();
+    let mean_val_col_max = oneline[linepairs[0].1..linepairs[1].0].to_vec();
+    let min_val0  = *mean_val_col_min.iter().min().unwrap() as u16;  
+    let max_val0  = *mean_val_col_max.iter().max().unwrap() as u16;   
     let contrast0 = (max_val0 - min_val0) as u16;
 
     // result
@@ -627,14 +625,10 @@ fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (Has
     let mut mean_weights = 0.21;
     for idx in 1..linepairs.len() {
         // in case of MTF bar (hardware error)
-        if idx == 12 {
+        if idx == 13 {
             continue;
         }
         let (s1, s2) = linepairs[idx];
-        // let linepair = focus.slice(s![
-        //     .., start..end
-        // ]).to_owned();
-        // let mean_val_col = linepair.mean_axis(Axis(0)).unwrap();
         let mut mean_val_col = oneline[s1..s2].to_vec();
         mean_val_col.sort();
         // for all lp>7 
@@ -669,27 +663,27 @@ fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (Has
         res.get_mut("Min").unwrap().push(min_val as f32);
         res.get_mut("Contrast").unwrap().push(contrast as f32);
         res.get_mut("Modulation").unwrap().push(modulation);
-        // res.get_mut("start").unwrap().push(s1 as f32);
-        // res.get_mut("end").unwrap().push(s2 as f32);
     }
     // skip lp number 13
-    let edge1 = linepairs[11].1;
-    let edge2 = linepairs[12].0;
-    let edge3 = linepairs[12].1;
-    let edge4 = linepairs[13].0;
+    let edge1 = linepairs[12].1;
+    let edge2 = linepairs[13].0;
+    let edge3 = linepairs[13].1;
+    let edge4 = linepairs[14].0;
     let skip1 = (edge1+edge2)/2;
     let skip2 = (edge3+edge4)/2;
     let mut section1 = oneline[..skip1].to_vec();
     let section2 = oneline[skip2..oneline.len()].to_vec();
     section1.extend(section2.iter());
-    let mut oneline_res: Vec<u16> = section1.iter().map(|&val| val as u16).collect();
+    let oneline_res: Vec<u16> = section1.iter().map(|&val| val as u16).collect();
     // fix position in graph
-    let start_val = linepairs[0].0 as f32 - (linepairs[0].1 - linepairs[0].0) as f32;
-    oneline_res = oneline_res[start_val as usize..oneline_res.len()].to_vec();
+    // let start_val = linepairs[0].0 as f32 - (linepairs[0].1 - linepairs[0].0) as f32;
+    // oneline_res = oneline_res[start_val as usize..oneline_res.len()].to_vec();
     for idx in 0..linepairs.len() {
         let (s1, s2) = linepairs[idx];
-        res.get_mut("start").unwrap().push(s1 as f32 - start_val);
-        res.get_mut("end").unwrap().push(s2 as f32 -  start_val);
+        res.get_mut("start").unwrap().push(s1 as f32);
+        res.get_mut("end").unwrap().push(s2 as f32);
+        // res.get_mut("start").unwrap().push(s1 as f32 - start_val);
+        // res.get_mut("end").unwrap().push(s2 as f32 -  start_val);
     };
     (res, oneline_res)
 }

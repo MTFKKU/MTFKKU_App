@@ -3,6 +3,20 @@
 version = 3
 
 [[package]]
+name = "MTFKKU"
+version = "1.0.0"
+dependencies = [
+ "dicom",
+ "image 0.23.14",
+ "ndarray",
+ "ndarray-stats",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1877,20 +1891,6 @@ checksum = "e7810e0be55b428ada41041c41f32c9f1a42817901b4ccf45fa3d4b6561e74c7"
 dependencies = [
  "adler",
  "simd-adler32",
-]
-
-[[package]]
-name = "mtf-app"
-version = "0.0.0"
-dependencies = [
- "dicom",
- "image 0.23.14",
- "ndarray",
- "ndarray-stats",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
 ]
 
 [[package]]
