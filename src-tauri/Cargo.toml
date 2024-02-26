@@ -2,7 +2,7 @@
 name = "MTFKKU"
 version = "1.0.0"
 description = "MTFKKU"
-authors = ["you"]
+authors = ["NickyAlan"]
 license = ""
 repository = "https://github.com/MTFKKU/MTFKKU_App"
 edition = "2021"
