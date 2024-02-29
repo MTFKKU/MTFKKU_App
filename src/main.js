@@ -31,7 +31,7 @@ let legitImagePath = [];
 let userName;
 let room;
 const linepairs = [
-  0.0,
+  0.05,
   1.0,
   1.11,
   1.23,

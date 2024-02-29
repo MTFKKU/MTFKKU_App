@@ -507,7 +507,7 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
         ]).to_owned();
         focus = real_focus.mapv(|x| x as u128);
     } 
-    let oneline_ori = focus.mean_axis(Axis(0)).unwrap().into_raw_vec(); // 0 is axis by col
+    let mut oneline_ori = focus.mean_axis(Axis(0)).unwrap().into_raw_vec(); // 0 is axis by col
     let p_mean = find_mean(&oneline_ori) as u128;
     let oneline = oneline_ori.iter()
         .map(|&x| if x > p_mean { 1 } else { 0 })
@@ -572,9 +572,39 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
             linepairs.push((s1+1, s1+2));
         }
     } 
+
+    // apadtive_val in case to get close val as AUTOPIA
+    let mut adjust_percent = 0.035;
+    for (idx, (s1, s2)) in linepairs.iter().enumerate() {
+        // not adapt 1st lp
+        if idx == 0 {
+            continue;
+        }
+        // all lp > 12 
+        if idx == 12 {
+            adjust_percent = 0.01;
+        }
+        let vals = oneline_ori[*s1..*s2].to_vec();
+        let mut sorted_vals = vals.clone();
+        sorted_vals.sort();
+        let min_val = sorted_vals[0];
+        let max_val = sorted_vals[sorted_vals.len()-1];
+        let median_val = sorted_vals[((s2-s1) as f32 /2.0) as usize];
+        let mut adaptive_vals = vec![];
+        for val in vals {
+            let adapt_val;
+            if val >= median_val {
+                adapt_val = cmp::max(val as i32 - (adjust_percent * (max_val as f32)) as i32, 0) as u128;  // prevent overflow
+            } else {
+                adapt_val = val + (adjust_percent * (min_val as f32)) as u128;
+            }
+            adaptive_vals.push(adapt_val);
+        }
+        oneline_ori.splice(s1..s2, adaptive_vals);
+    }
+
     //skip first one because we dont use it
     // linepairs = linepairs[1..].to_vec();
-    // Ok((real_focus, linepairs, oneline_ori, arr))
     Ok((linepairs, oneline_ori, arr))
 }
 
@@ -633,7 +663,7 @@ fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (Has
         mean_val_col.sort();
         // for all lp>7 
         if idx == 7 {
-            mean_weights = 0.35;
+            mean_weights = 0.30;
         }
         let mid_pos = cmp::max(cmp::min(
         (s2-s1)/2, ((s2-s1) as f32 * mean_weights) as usize
