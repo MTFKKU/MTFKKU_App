@@ -575,15 +575,14 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
 
     // apadtive_val in case to get close val as AUTOPIA
     let mut adjust_percent = 0.035;
+    let reduce_rate = 0.95;
     for (idx, (s1, s2)) in linepairs.iter().enumerate() {
         // not adapt 1st lp
         if idx == 0 {
             continue;
         }
-        // all lp > 12 
-        if idx == 12 {
-            adjust_percent = 0.01;
-        }
+        // reduce each lp adjust_percent
+        adjust_percent *= reduce_rate;
         let vals = oneline_ori[*s1..*s2].to_vec();
         let mut sorted_vals = vals.clone();
         sorted_vals.sort();
