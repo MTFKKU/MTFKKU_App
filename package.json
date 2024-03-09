@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.8"
+  },
+  "dependencies": {
+    "ml-regression-polynomial": "^3.0.0"
   }
 }

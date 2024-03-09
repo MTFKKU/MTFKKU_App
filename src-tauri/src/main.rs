@@ -30,6 +30,8 @@ fn processing(file_path: String, save_path: String) -> (HashMap<String, Vec<f32>
         Some(obj) => {
             let pixel_data: dicom::pixeldata::DecodedPixelData<'_> = obj.decode_pixel_data().unwrap();
             let arr=  pixel_data.to_ndarray::<u16>().unwrap().slice(s![0, .., .., 0]).to_owned();
+            // TODO : temporay fixed some bar can't process
+            let arr = rotate_array(PI/2.0, arr); 
 
             // details
             let hospital = get_detail(&obj, tags::INSTITUTION_NAME);
@@ -574,33 +576,33 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
     } 
 
     // apadtive_val in case to get close val as AUTOPIA
-    let mut adjust_percent = 0.035;
-    let reduce_rate = 0.95;
-    for (idx, (s1, s2)) in linepairs.iter().enumerate() {
-        // not adapt 1st lp
-        if idx == 0 {
-            continue;
-        }
-        // reduce each lp adjust_percent
-        adjust_percent *= reduce_rate;
-        let vals = oneline_ori[*s1..*s2].to_vec();
-        let mut sorted_vals = vals.clone();
-        sorted_vals.sort();
-        let min_val = sorted_vals[0];
-        let max_val = sorted_vals[sorted_vals.len()-1];
-        let median_val = sorted_vals[((s2-s1) as f32 /2.0) as usize];
-        let mut adaptive_vals = vec![];
-        for val in vals {
-            let adapt_val;
-            if val >= median_val {
-                adapt_val = cmp::max(val as i32 - (adjust_percent * (max_val as f32)) as i32, 0) as u128;  // prevent overflow
-            } else {
-                adapt_val = val + (adjust_percent * (min_val as f32)) as u128;
-            }
-            adaptive_vals.push(adapt_val);
-        }
-        oneline_ori.splice(s1..s2, adaptive_vals);
-    }
+    // let mut adjust_percent = 0.035;
+    // let reduce_rate = 0.95;
+    // for (idx, (s1, s2)) in linepairs.iter().enumerate() {
+    //     // not adapt 1st lp
+    //     if idx == 0 {
+    //         continue;
+    //     }
+    //     // reduce each lp adjust_percent
+    //     adjust_percent *= reduce_rate;
+    //     let vals = oneline_ori[*s1..*s2].to_vec();
+    //     let mut sorted_vals = vals.clone();
+    //     sorted_vals.sort();
+    //     let min_val = sorted_vals[0];
+    //     let max_val = sorted_vals[sorted_vals.len()-1];
+    //     let median_val = sorted_vals[((s2-s1) as f32 /2.0) as usize];
+    //     let mut adaptive_vals = vec![];
+    //     for val in vals {
+    //         let adapt_val;
+    //         if val >= median_val {
+    //             adapt_val = cmp::max(val as i32 - (adjust_percent * (max_val as f32)) as i32, 0) as u128;  // prevent overflow
+    //         } else {
+    //             adapt_val = val + (adjust_percent * (min_val as f32)) as u128;
+    //         }
+    //         adaptive_vals.push(adapt_val);
+    //     }
+    //     oneline_ori.splice(s1..s2, adaptive_vals);
+    // }
 
     //skip first one because we dont use it
     // linepairs = linepairs[1..].to_vec();
@@ -703,16 +705,16 @@ fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (Has
     let mut section1 = oneline[..skip1].to_vec();
     let section2 = oneline[skip2..oneline.len()].to_vec();
     section1.extend(section2.iter());
-    let oneline_res: Vec<u16> = section1.iter().map(|&val| val as u16).collect();
+    let mut oneline_res: Vec<u16> = section1.iter().map(|&val| val as u16).collect();
     // fix position in graph
-    // let start_val = linepairs[0].0 as f32 - (linepairs[0].1 - linepairs[0].0) as f32;
-    // oneline_res = oneline_res[start_val as usize..oneline_res.len()].to_vec();
+    let start_val = ((linepairs[0].1 as f32 + linepairs[1].0 as f32) / 2.0) as usize;
+    oneline_res = oneline_res[start_val as usize..oneline_res.len()].to_vec();
     for idx in 0..linepairs.len() {
         let (s1, s2) = linepairs[idx];
-        res.get_mut("start").unwrap().push(s1 as f32);
-        res.get_mut("end").unwrap().push(s2 as f32);
-        // res.get_mut("start").unwrap().push(s1 as f32 - start_val);
-        // res.get_mut("end").unwrap().push(s2 as f32 -  start_val);
+        // res.get_mut("start").unwrap().push(s1 as f32);
+        // res.get_mut("end").unwrap().push(s2 as f32);
+        res.get_mut("start").unwrap().push(s1 as f32 - start_val as f32);
+        res.get_mut("end").unwrap().push(s2 as f32 -  start_val as f32);
     };
     (res, oneline_res)
 }

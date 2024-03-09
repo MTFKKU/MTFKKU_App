@@ -4,6 +4,7 @@ const { convertFileSrc } = window.__TAURI__.tauri;
 const { appWindow } = window.__TAURI__.window;
 const { save, message } = window.__TAURI__.dialog;
 
+
 // let openFile;
 let fileName;
 let mainContainer;
@@ -373,7 +374,7 @@ function displayRes(idx) {
 
   let data0 = [mtf_line];
   // max
-  for (let idx = 0; idx < contrast.length; idx++) {
+  for (let idx = 1; idx < contrast.length; idx++) {
     if (idx == 0) {
       data0.push({
         x: [end[idx], start[idx + 1]],
@@ -399,7 +400,7 @@ function displayRes(idx) {
     }
   }
   // min
-  for (let idx = 0; idx < contrast.length; idx++) {
+  for (let idx = 1; idx < contrast.length; idx++) {
     data0.push({
       x: [start[idx], end[idx]],
       y: [min_[idx], min_[idx]],
@@ -411,11 +412,15 @@ function displayRes(idx) {
       },
     });
   }
-
   // bind:plot1
+  let xx = linepairs.slice(1);
+  let yy = modulation.slice(1);
+  // const regression = new PolynomialRegression(xx, yy, 2);
+  // console.log(regression);
+
   const modulation_plot = {
-    x: linepairs,
-    y: modulation,
+    x: xx,
+    y: yy,
     mode: "lines+markers",
   };
   const layout1 = {
