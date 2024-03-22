@@ -4,7 +4,6 @@ const { convertFileSrc } = window.__TAURI__.tauri;
 const { appWindow } = window.__TAURI__.window;
 const { save, message } = window.__TAURI__.dialog;
 
-
 // let openFile;
 let fileName;
 let mainContainer;
@@ -143,12 +142,13 @@ async function process(content) {
         changeScale();
       }
 
-      // bind:plot1
+      // bind:plot1 
       let data = [];
       for (let idx = 0; idx < numberOfRes; idx++) {
+        // SKIP first lp
         data.push({
-          x: linepairs,
-          y: elements["modulations"][idx],
+          x: linepairs.slice(1),
+          y: elements["modulations"][idx].slice(1),
           mode: "lines+markers",
           name: legitFileName[idx],
         });
@@ -255,6 +255,13 @@ function displayRes(idx) {
   const max_ = details["Max"];
   const min_ = details["Min"];
   const modulation = details["Modulation"];
+  const solution = poly(modulation);
+  let estimate_lp = [];
+  const est_modulation = [80.0, 50.0, 10.0]
+  for (const x_pred of est_modulation) {
+    let res = solution[0][0] + (solution[1][0] * x_pred) + (solution[2][0] * Math.pow(x_pred, 2));
+    estimate_lp.push(res.toFixed(2));
+  }
   const start = details["start"];
   const end = details["end"];
   const csvInfo = [linepairs, max_, min_, contrast, modulation];
@@ -281,9 +288,13 @@ function displayRes(idx) {
     }
     contentCsv += "/n";
   }
+  contentCsv += "/nModulation,Estimate LP/n";
+  for (let idx=0; idx<est_modulation.length; idx++) {
+    contentCsv+= `${est_modulation[idx]},${estimate_lp[idx]}/n`
+  }
   compareCsv += contentCsv;
-  compareCsv += "/n";
-
+  compareCsv += "/n/n";
+  
   // change plot scale
   if (zoomLevel == 1.25) {
     p0w = "610px";
@@ -324,6 +335,7 @@ function displayRes(idx) {
                         <button id="export" onclick="saveCsv('${savePath}', '${contentCsv}')">Export</button>
                     </div>  
                     <div class="mtf-plot1" id="mtf-plot1${idx}" style="width: ${p1w}; height: ${p1h}"></div>
+                    <p class="estimate-lp">estimate linepairs 80%, 50%, 10% = ${estimate_lp[0]}, ${estimate_lp[1]}, ${estimate_lp[2]}</p>
                 </div>
             </div>
         `;
@@ -415,8 +427,6 @@ function displayRes(idx) {
   // bind:plot1
   let xx = linepairs.slice(1);
   let yy = modulation.slice(1);
-  // const regression = new PolynomialRegression(xx, yy, 2);
-  // console.log(regression);
 
   const modulation_plot = {
     x: xx,
@@ -449,7 +459,7 @@ function displayRes(idx) {
     margin: {
       l: 80,
       r: 50,
-      b: 80,
+      b: 50,
       t: 20,
       pad: 4,
     },
@@ -482,6 +492,28 @@ function displayRes(idx) {
 
   Plotly.newPlot(`mtf-plot0${idx}`, data0, layout0);
   Plotly.newPlot(`mtf-plot1${idx}`, [modulation_plot], layout1);
+}
+
+const poly = (x) => {
+  let order = 2;
+  let xMatrix = [];
+  let xTemp = [];
+  let yMatrix = numeric.transpose([linepairs]);
+
+  for (let j = 0; j < x.length; j++) {
+    xTemp = [];
+    for (let i = 0; i <= order; i++) {
+      xTemp.push(1 * Math.pow(x[j], i));
+    }
+    xMatrix.push(xTemp);
+  }
+
+  let xMatrixT = numeric.transpose(xMatrix);
+  let dot1 = numeric.dot(xMatrixT, xMatrix);
+  let dotInv = numeric.inv(dot1);
+  let dot2 = numeric.dot(xMatrixT, yMatrix);
+  let solution = numeric.dot(dotInv, dot2);
+  return solution;
 }
 
 function showLoad(show) {

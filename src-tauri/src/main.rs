@@ -10,7 +10,6 @@ use tauri::Manager;
 use std::collections::HashMap;
 use std::fs;
 use std::cmp::{max, min};
-use std;
 use std::cmp;
 
 // type
@@ -23,7 +22,6 @@ type Obj = FileDicomObject<InMemDicomObject>;
 const PI: f64 = 3.14159;
 const LIMITANGLE: f64 = 0.0393599;
 
-
 #[tauri::command]
 fn processing(file_path: String, save_path: String) -> (HashMap<String, Vec<f32>>, Vec<u16>, Vec<String>) {
     match open_dcm_file(file_path) {
@@ -31,7 +29,7 @@ fn processing(file_path: String, save_path: String) -> (HashMap<String, Vec<f32>
             let pixel_data: dicom::pixeldata::DecodedPixelData<'_> = obj.decode_pixel_data().unwrap();
             let arr=  pixel_data.to_ndarray::<u16>().unwrap().slice(s![0, .., .., 0]).to_owned();
             // TODO : temporay fixed some bar can't process
-            let arr = rotate_array(PI/2.0, arr); 
+            // let arr = rotate_array(PI/2.0, arr); 
 
             // details
             let hospital = get_detail(&obj, tags::INSTITUTION_NAME);
@@ -70,7 +68,7 @@ fn processing(file_path: String, save_path: String) -> (HashMap<String, Vec<f32>
                 // rotate for straight line
                 let arr = rotate_array(theta_r, arr);
                 // focus one line to find linepairs position
-                if let Ok((linepairs, oneline, arr)) = linepairs_pos(arr) {
+                if let Ok((linepairs, oneline, arr)) = linepairs_pos(arr, need_inv) {
                     save_to_image(arr, save_path);
                     // let res = calculate_details(focus, linepairs);
                     let (res, oneline_res) = calculate_details(oneline, linepairs);
@@ -177,10 +175,7 @@ fn find_mtf_bar(mut arr: U16Array) -> Result<(U16Array, bool), ()> {
     let mut arr = arr.slice(s![
         h_min..h_max, w_min..w_max
     ]).to_owned();
-    if need_inv {
-        let max_val = arr.max().unwrap();
-        arr = arr.mapv(|x| (max_val-x) as u16);
-    }
+
     if need_rotate {
         let s = arr.shape();
         let nrows = s[0];
@@ -480,14 +475,14 @@ fn find_most_common(array: Vec<u16>) -> i32 {
     max_key.unwrap() as i32
 }
 
-fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U16Array), ()> {
+fn linepairs_pos(mut arr: U16Array, need_inv: bool) -> Result<(Vec<(usize, usize)>, Vec<u128>, U16Array), ()> {
     // find linpairs position 
     let h = arr.nrows() as i32;
     let w = arr.ncols() as i32;
     let hp = (0.11*(h as f32)) as i32;
     let wp = (0.10*(w as f32)) as i32;
     // crop 
-    let mut focus_crop = vec![(h/2)-hp, (h/2)+hp, (wp as f32 * 1.5) as i32, w-((wp as f32 * 1.2) as i32)];
+    let focus_crop = vec![(h/2)-hp, (h/2)+hp, (wp as f32 * 1.5) as i32, w-((wp as f32 * 1.2) as i32)];
     let mut real_focus = arr.slice(s![
         focus_crop[0]..focus_crop[1], focus_crop[2]..focus_crop[3]
     ]).to_owned();
@@ -503,13 +498,21 @@ fn linepairs_pos(mut arr: U16Array) -> Result<(Vec<(usize, usize)>, Vec<u128>, U
     let std = rotate_check.std(1.0) as f32;
     if std > (focus.max().unwrap() - focus.min().unwrap()) as f32 /30.0 {
         arr = rotate_array(PI, arr);
-        focus_crop = vec![(h/2)-hp, (h/2)+hp, (wp as f32 * 1.5) as i32, w-((wp as f32 * 1.2) as i32)];
-        real_focus = arr.slice(s![
-            focus_crop[0]..focus_crop[1], focus_crop[2]..focus_crop[3]
-        ]).to_owned();
-        focus = real_focus.mapv(|x| x as u128);
     } 
-    let mut oneline_ori = focus.mean_axis(Axis(0)).unwrap().into_raw_vec(); // 0 is axis by col
+
+    // inv LUT
+    if need_inv {
+        let max_pixel = *focus.max().unwrap() as i32;
+        let min_pixel = *focus.min().unwrap() as i32;
+        arr = arr.mapv(|x| (max_pixel -x as i32 +min_pixel) as u16);
+    }
+    
+    real_focus = arr.slice(s![
+        focus_crop[0]..focus_crop[1], focus_crop[2]..focus_crop[3]
+    ]).to_owned();
+    focus = real_focus.mapv(|x| x as u128);
+
+    let oneline_ori = focus.mean_axis(Axis(0)).unwrap().into_raw_vec(); // 0 is axis by col
     let p_mean = find_mean(&oneline_ori) as u128;
     let oneline = oneline_ori.iter()
         .map(|&x| if x > p_mean { 1 } else { 0 })

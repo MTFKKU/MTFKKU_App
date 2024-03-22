@@ -160,6 +160,11 @@ p, h3 {
   gap: 10px;
 }
 
+.right .estimate-lp {
+  text-align: center;
+  color: blue;
+}
+
 .top-right, .info-compare {
   padding: 10px 50px;
   display: flex;
