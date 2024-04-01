@@ -625,21 +625,7 @@ fn find_mean(vector: &Vec<u128>) -> f32 {
 }
 
 fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (HashMap<String, Vec<f32>>, Vec<u16>) {
-    // calculate details value in MTF linepairs
-
-    // calculate maximum (1st linepair) [lp 1mm]
-    // let mean_weights = 0.18;
-    // let s1 = linepairs[0].0;
-    // let s2 = linepairs[0].1;
-    // let mut mean_val_col = oneline[s1..s2].to_vec();
-    // mean_val_col.sort();
-    // let mid_pos = cmp::max(cmp::min(
-    //     (s2-s1)/2, ((s2-s1) as f32 * mean_weights) as usize
-    // ), 1); // prevent mid_pos is 0
-    // let min_val0 = find_mean(&mean_val_col[0..mid_pos].to_vec()) as u16;
-    // let max_val0 = find_mean(&mean_val_col[mean_val_col.len()-mid_pos..mean_val_col.len()].to_vec()) as u16;
-
-    // calculate maximum (1st linepairs) [lp 0mm]
+    // calculate maximum (1st linepairs) [lp 0.05mm]
     let mean_val_col_min = oneline[linepairs[0].0..linepairs[0].1].to_vec();
     let mean_val_col_max = oneline[linepairs[0].1..linepairs[1].0].to_vec();
     let min_val0  = *mean_val_col_min.iter().min().unwrap() as u16;  
@@ -674,21 +660,7 @@ fn calculate_details(oneline: Vec<u128>, linepairs: Vec<(usize, usize)>) -> (Has
         ), 1); // prevent mid_pos is 0
         let min_val = find_mean(&mean_val_col[0..mid_pos].to_vec()) as u16;
         let max_val = find_mean(&mean_val_col[mean_val_col.len()-mid_pos..mean_val_col.len()].to_vec()) as u16;
-        // let mut sorted_val = mean_val_col.into_raw_vec();
-        // sorted_val.sort(); //  to seperate max and min vals
-        // let mid_pos = cmp::max(cmp::min(
-            // (end-start)/2, ((end-start) as f32 * 0.3) as usize
-        // ), 1); // prevent mid_pos is 0
-        // min vals
-        // mean_min_vals = round(np.mean(sorted_val[: mid_pos]))
-        // let sum_min_vals: i128 = sorted_val[0..mid_pos].iter().sum();
-        // let mean_min_vals: f32 = sum_min_vals as f32 / mid_pos as f32;
-        // max vals
-        // mean_max_vals = round(np.mean(sorted_val[-mid_pos: ]))
-        // let sum_max_vals: i128 = sorted_val[(sorted_val.len()-mid_pos)..sorted_val.len()].iter().sum();
-        // let mean_max_vals: f32 = sum_max_vals as f32 / sorted_val[(sorted_val.len()-mid_pos)..sorted_val.len()].len() as f32;
-        // let min_vals = *mean_val_col.min().unwrap();
-        // let max_vals = *mean_val_col.max().unwrap();
+
         // contrast and modulation
         let contrast = max_val - min_val;
         let modulation = (contrast as f32)*100.0/(contrast0 as f32);

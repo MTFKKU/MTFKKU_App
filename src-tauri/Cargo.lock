@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "MTFKKU"
-version = "1.0.0"
+version = "1.0.5"
 dependencies = [
  "dicom",
  "image 0.23.14",
