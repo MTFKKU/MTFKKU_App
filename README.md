@@ -1,11 +1,12 @@
-![mtfkku-banner](https://github.com/MTFKKU/MTFKKU_App/assets/97141979/6f880b4e-bddb-43fe-909e-50a3ae83c938)
+![mtfkku-banner](https://github.com/MTFKKU/MTFKKU_App/assets/97141979/a39825b3-3f7b-48b1-830d-c7fe7b23ad47)
+MTF stands for Modulation Transfer Function, and KKU stands for Khon Kaen University. 
 
-MTF stands for Modulation Transfer Function, and KKU stands for Khon Kaen University. The idea behind this app is that when we want to test the performance of an X-ray detector in terms of image quality, one result is MTF. However, it requires purchasing an MTF test tool and associated software (which is expensive). This situation has led us to develop software to process MTF bars (which is not as expensive) in order to automate this tedious task.
+The idea behind this app is that when we want to test the performance of an X-ray detector in terms of image quality, one result is MTF. However, it requires purchasing an MTF test tool and associated software (which is expensive). This situation has led us to develop software to process MTF bars (which is not as expensive) in order to automate this tedious task.
 
 ![alt text](https://github.com/MTFKKU/MTFKKU_App/blob/main/app-usage.gif)
 
 ## How to use 
-Capture an X-ray image using the parameters typically employed for MTF bar alignment, aligning it longitudinally or transversely with the image detector. Afterward, we recommend not cropping the image, as the software will handle this task automatically.
+Capture an X-ray image using the parameters typically employed for MTF bar alignment, aligning it longitudinally or transversely with the image detector. Afterward, we recommend `not cropping the image`, as the software will handle this task automatically.
 
 ## Key features
 - [x] Automatic processing of values: maximum, minimum, contrast, modulation; visualization of graphs; and estimation of line pairs value from modulation for comparison to baseline.
