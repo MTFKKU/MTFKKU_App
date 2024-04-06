@@ -1,4 +1,5 @@
-# MTFKKU
+![mtfkku-banner](https://github.com/MTFKKU/MTFKKU_App/assets/97141979/6f880b4e-bddb-43fe-909e-50a3ae83c938)
+
 MTF stands for Modulation Transfer Function, and KKU stands for Khon Kaen University. The idea behind this app is that when we want to test the performance of an X-ray detector in terms of image quality, one result is MTF. However, it requires purchasing an MTF test tool and associated software (which is expensive). This situation has led us to develop software to process MTF bars (which is not as expensive) in order to automate this tedious task.
 
 ![alt text](https://github.com/MTFKKU/MTFKKU_App/blob/main/app-usage.gif)
@@ -7,11 +8,11 @@ MTF stands for Modulation Transfer Function, and KKU stands for Khon Kaen Univer
 Capture an X-ray image using the parameters typically employed for MTF bar alignment, aligning it longitudinally or transversely with the image detector. Afterward, we recommend not cropping the image, as the software will handle this task automatically.
 
 ## Key features
-1. Automatic processing of values: maximum, minimum, contrast, modulation; visualization of graphs; and estimation of line pairs value from modulation for comparison to baseline.
-2. Handling of incorrectly aligned bars and realignment to correct angles.
-3. Automatically invert the LUT (Look-Up Table) if the image is not inverted.
-4. Provision of information sourced from the detector.
-5. Export to .csv format for further analysis.
+- [x] Automatic processing of values: maximum, minimum, contrast, modulation; visualization of graphs; and estimation of line pairs value from modulation for comparison to baseline.
+- [x] Handling of incorrectly aligned bars and realignment to correct angles.
+- [x] Automatically invert the LUT (Look-Up Table) if the image is not inverted.
+- [x] Provision of information sourced from the detector.
+- [x] Export to .csv format for further analysis.
 
 ## Installation
 Currently, the software only supports **Windows OS**. We will provide the download link soon.
