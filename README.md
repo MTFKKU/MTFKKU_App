@@ -3,6 +3,8 @@ MTF stands for Modulation Transfer Function, and KKU stands for Khon Kaen Univer
 
 The idea behind this app is that when we want to test the performance of an X-ray detector in terms of image quality, one result is MTF. However, it requires purchasing an MTF test tool and associated software (which is expensive). This situation has led us to develop software to process MTF bars (which is not as expensive) in order to automate this tedious task.
 
+overview here : https://mtfkku.github.io/mtfapp.html
+
 ## How to use 
 Capture an X-ray image using the parameters typically employed for MTF bar alignment, aligning it longitudinally or transversely with the image detector. Afterward, we recommend `not cropping the image`, as the software will handle this task automatically.
 
